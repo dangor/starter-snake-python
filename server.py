@@ -1,7 +1,8 @@
 import os
-import random
 
 import cherrypy
+
+from snake import Snake
 
 """
 This is a simple Battlesnake server written in Python.
@@ -18,10 +19,10 @@ class Battlesnake(object):
         # TIP: If you open your Battlesnake URL in browser you should see this data
         return {
             "apiversion": "1",
-            "author": "",  # TODO: Your Battlesnake Username
-            "color": "#888888",  # TODO: Personalize
-            "head": "default",  # TODO: Personalize
-            "tail": "default",  # TODO: Personalize
+            "author": "Dangorus",
+            "color": "#32174d",
+            "head": "dead",
+            "tail": "skinny",
         }
 
     @cherrypy.expose
@@ -29,9 +30,6 @@ class Battlesnake(object):
     def start(self):
         # This function is called everytime your snake is entered into a game.
         # cherrypy.request.json contains information about the game that's about to be played.
-        # TODO: Use this function to decide how your snake is going to look on the board.
-        data = cherrypy.request.json
-
         print("START")
         return "ok"
 
@@ -44,9 +42,8 @@ class Battlesnake(object):
         # TODO: Use the information in cherrypy.request.json to decide your next move.
         data = cherrypy.request.json
 
-        # Choose a random direction to move in
-        possible_moves = ["up", "down", "left", "right"]
-        move = random.choice(possible_moves)
+        snake = Snake(data)
+        move = snake.next_move()
 
         print(f"MOVE: {move}")
         return {"move": move}
@@ -56,8 +53,6 @@ class Battlesnake(object):
     def end(self):
         # This function is called when a game your snake was in ends.
         # It's purely for informational purposes, you don't have to make any decisions here.
-        data = cherrypy.request.json
-
         print("END")
         return "ok"
 
