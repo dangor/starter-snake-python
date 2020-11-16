@@ -16,15 +16,13 @@ Board representation
 class Board:
   def __init__(self, board_data):
     # Initialize board
-    board = [[]]
+    board = []
     for i in range(board_data["width"]):
       column = []
       for j in range(board_data["height"]):
         column.append(Token.EMPTY)
       board.append(column)
     
-    print(f"({len(board)}, {len(board[0])})")
-
     # Add snakes
     for snake in board_data["snakes"]:
       for coord in snake["body"]:
@@ -46,7 +44,5 @@ class Board:
   def token(self, x, y):
     if x < 0 or y < 0 or x >= self.width or y >= self.height:
       return Token.OUT_OF_BOUNDS
-
-    print(f"[{x}][{y}] ({len(self.board)}, {len(self.board[x])})")
 
     return self.board[x][y]
