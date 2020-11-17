@@ -1,6 +1,7 @@
 import os
 
 import cherrypy
+import unittest
 
 from snake import Snake
 
@@ -58,6 +59,9 @@ class Battlesnake(object):
 
 
 if __name__ == "__main__":
+    # Unit tests
+    # unittest.main()
+    
     server = Battlesnake()
     cherrypy.config.update({"server.socket_host": "0.0.0.0"})
     cherrypy.config.update(

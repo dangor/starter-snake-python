@@ -51,6 +51,7 @@ class Snake:
     possible_moves = self.avoid_death(possible_moves)
 
     if len(possible_moves) == 0:
+      print("Trapped! Defaulting to move up.")
       return Move.UP.value
 
     # Choose a random direction to move in

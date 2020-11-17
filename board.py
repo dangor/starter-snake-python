@@ -30,11 +30,11 @@ class Board:
 
     # Add food
     for food in board_data["food"]:
-      board[coord["x"]][coord["y"]] = Token.FOOD
+      board[food["x"]][food["y"]] = Token.FOOD
 
     # Add hazards
     for hazard in board_data["hazards"]:
-      board[coord["x"]][coord["y"]] = Token.HAZARD
+      board[hazard["x"]][hazard["y"]] = Token.HAZARD
 
     self.board = board
     self.height = board_data["height"]
