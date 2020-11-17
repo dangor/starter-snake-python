@@ -1,4 +1,5 @@
 from enum import Enum
+import sys
 
 """
 Board token types
@@ -39,10 +40,51 @@ class Board:
     self.board = board
     self.height = board_data["height"]
     self.width = board_data["width"]
+    self.food = board_data["food"]
 
-  # Get token type at x, y coord
-  def token(self, x, y):
+  # Get token type at coord
+  def token(self, coord):
+    x, y = coord["x"], coord["y"]
     if x < 0 or y < 0 or x >= self.width or y >= self.height:
       return Token.OUT_OF_BOUNDS
 
     return self.board[x][y]
+
+  # Find nearest food to coord
+  def nearest_food(self, coord):
+    if len(self.food):
+      return None
+
+    short = sys.maxsize
+
+    for food in self.food:
+      distance = self.calculate_distance(food["x"], food["y"], coord["x"], coord["y"])
+      
+      if distance < short:
+        coords = {"x": food["x"], "y": food["y"]}
+
+    return coords
+  
+  # Calculate distance
+  def calculate_distance(x1, y1, x2, y2):
+    width = abs(x2 - x1)
+    height = abs(y2 - y1)
+
+    return (width ** 2 + height ** 2) ** (1/2)
+
+  # Return a list of safe neighbors to go to from coord
+  def safe_neighbors(self, coord):
+    neighbors = [
+      {"x": coord["x"], "y": coord["y"] + 1},
+      {"x": coord["x"], "y": coord["y"] - 1},
+      {"x": coord["x"] + 1, "y": coord["y"]},
+      {"x": coord["x"] - 1, "y": coord["y"]},
+    ]
+    safe = []
+
+    for neighbor in neighbors:
+      neighbor_token = self.token(neighbor)
+      if neighbor_token == Token.EMPTY or neighbor_token == Token.FOOD:
+        safe.append(neighbor)
+
+    return safe

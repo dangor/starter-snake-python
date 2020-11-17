@@ -13,7 +13,8 @@ class TestSnake(unittest.TestCase):
         "hazards": []
       },
       "you": {
-        "health": 100
+        "health": 100,
+        "body": [{"x": 0, "y": 0}]
       }
     }
     self.default_moves = [Move.UP, Move.DOWN, Move.LEFT, Move.RIGHT]
