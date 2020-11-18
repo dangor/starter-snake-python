@@ -1,5 +1,6 @@
 import unittest
 
+from util import merge_dict
 from snake import Snake, Move
 
 class TestSnake(unittest.TestCase):
@@ -20,8 +21,8 @@ class TestSnake(unittest.TestCase):
     self.default_moves = [Move.UP, Move.DOWN, Move.LEFT, Move.RIGHT]
 
   def test_avoid_wall(self):
-    testData = self.default_data
-    merge(testData, {
+    test_data = self.default_data
+    merge_dict(test_data, {
       "board": {
         "width": 10,
         "height": 10
@@ -30,13 +31,13 @@ class TestSnake(unittest.TestCase):
         "head": {"x": 0, "y": 9}
       }
     })
-    snake = Snake(testData)
+    snake = Snake(test_data)
     new_moves = snake.avoid_death(self.default_moves)
     self.assertEqual(new_moves, [Move.DOWN, Move.RIGHT])
 
   def test_avoid_hazard(self):
-    testData = self.default_data
-    merge(testData, {
+    test_data = self.default_data
+    merge_dict(test_data, {
       "board": {
         "hazards": [{"x": 0, "y": 1}]
       },
@@ -44,13 +45,13 @@ class TestSnake(unittest.TestCase):
         "head": {"x": 1, "y": 1}
       }
     })
-    snake = Snake(testData)
+    snake = Snake(test_data)
     new_moves = snake.avoid_death(self.default_moves)
     self.assertEqual(new_moves, [Move.UP, Move.DOWN, Move.RIGHT])
 
   def test_avoid_own_body(self):
-    testData = self.default_data
-    merge(testData, {
+    test_data = self.default_data
+    merge_dict(test_data, {
       "board": {
         "snakes": [{
           "head": {"x": 1, "y": 1},
@@ -68,13 +69,13 @@ class TestSnake(unittest.TestCase):
         ]
       }
     })
-    snake = Snake(testData)
+    snake = Snake(test_data)
     new_moves = snake.avoid_death(self.default_moves)
     self.assertEqual(new_moves, [Move.UP, Move.LEFT, Move.RIGHT])
 
   def test_avoid_other_snake(self):
-    testData = self.default_data
-    merge(testData, {
+    test_data = self.default_data
+    merge_dict(test_data, {
       "board": {
         "snakes": [{
           "body": [{"x": 2, "y": 1}]
@@ -84,18 +85,9 @@ class TestSnake(unittest.TestCase):
         "head": {"x": 1, "y": 1}
       }
     })
-    snake = Snake(testData)
+    snake = Snake(test_data)
     new_moves = snake.avoid_death(self.default_moves)
     self.assertEqual(new_moves, [Move.UP, Move.DOWN, Move.LEFT])
 
-# Merge two dictionaries recursively, copied from Stackoverflow
-def merge(d1, d2):
-    for k in d2:
-        if k in d1 and isinstance(d1[k], dict) and isinstance(d2[k], dict):
-            merge(d1[k], d2[k])
-        else:
-            d1[k] = d2[k]
-
-# Some code to make the tests actually run.
 if __name__ == '__main__':
   unittest.main()

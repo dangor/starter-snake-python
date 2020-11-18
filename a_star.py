@@ -25,10 +25,10 @@ class PriorityQueue:
 def reconstruct_path(came_from, current):
   (x, y) = current
   total_path = [{"x": x, "y": y}]
-  while current in came_from.Keys:
+  while current in came_from:
     current = came_from[current]
     (x, y) = current
-    total_path.prepend({"x": x, "y": y})
+    total_path.insert(0, {"x": x, "y": y})
   return total_path
 
 # Heuristic or value of the coord relative to the goal. Typically distance.
@@ -78,5 +78,5 @@ def a_star(board, start_coord, goal_coord):
         priority = gScore[neighbor] + heuristic(neighbor, goal)
         open_set.put(neighbor, priority)
 
-    # Open set is empty but goal was never reached
-    return []
+  # Open set is empty but goal was never reached
+  return []

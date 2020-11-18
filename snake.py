@@ -48,7 +48,7 @@ class Snake:
 
   # Get the move direction
   # This assumes the arguments are neighbors.
-  def direction(start, end):
+  def direction(self, start, end):
     if end["y"] > start["y"]:
       return Move.UP
     elif end["y"] < start["y"]:
@@ -58,15 +58,22 @@ class Snake:
     else:
       return Move.LEFT
 
-  # Get next move
+  # Get next move, public
+  # Returns a move string value
   def next_move(self):
+    return self._next_move().value
+
+  # Get next move, private
+  # Returns a Move enum
+  def _next_move(self):
     possible_moves = [Move.UP, Move.DOWN, Move.LEFT, Move.RIGHT]
 
     possible_moves = self.avoid_death(possible_moves)
 
     if len(possible_moves) == 0:
       print("Trapped! Defaulting to move up.")
-      return Move.UP.value
+      # TODO: Chase snake tail, especially if we know it will move.
+      return Move.UP
 
     # 1. If healthy, pick direction based on best path to own tail
     tail_path = []
@@ -87,6 +94,11 @@ class Snake:
     if len(tail_path) > 1 :
       return self.direction(tail_path[0], tail_path[1])
 
-    # If no tail path, then choose random. Points to room for improvement.
+    # If no tail path, then...
+
+    # TODO: Add more logic as we learn it
+    # TODO: Chase snake tail, especially if we know it will move.
+
+    # Default choose random. Points to area for improvement.
     print(f"Failed to path. Defaulting to random.")
-    return random.choice(possible_moves).value
+    return random.choice(possible_moves)
