@@ -43,8 +43,8 @@ def heuristic(coord, goal):
 # Zero cost means free, while higher cost discourages traversal.
 def weight(coord):
   # TODO: Add weight logic. Some ideas:
-  # - Avoid spaces next to long snakes, using higher weight
-  # - Avoid food if snake is healthy, using higher weight
+  # - Avoid spaces next to long snakes, return high weight
+  # - Avoid food if snake is healthy, return low-medium weight
   return 0
 
 # Actual A* search (Board object, start coord, goal coord)

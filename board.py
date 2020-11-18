@@ -52,25 +52,24 @@ class Board:
 
   # Find nearest food to coord
   def nearest_food(self, coord):
-    if len(self.food):
+    if len(self.food) == 0:
       return None
 
-    short = sys.maxsize
+    shortest = sys.maxsize
 
     for food in self.food:
       distance = self.calculate_distance(food["x"], food["y"], coord["x"], coord["y"])
       
-      if distance < short:
+      if distance < shortest:
+        shortest = distance
         coords = {"x": food["x"], "y": food["y"]}
 
     return coords
   
   # Calculate distance
-  def calculate_distance(x1, y1, x2, y2):
-    width = abs(x2 - x1)
-    height = abs(y2 - y1)
-
-    return (width ** 2 + height ** 2) ** (1/2)
+  def calculate_distance(self, x1, y1, x2, y2):
+    # return manhattan distance
+    return abs(x2 - x1) + abs(y2 - y1)
 
   # Return a list of safe neighbors to go to from coord
   def safe_neighbors(self, coord):
