@@ -1,6 +1,6 @@
 import random
 
-from board import Board, Token
+from board import Board, TokenType
 from enum import Enum
 from a_star import a_star
 
@@ -20,11 +20,13 @@ class Snake:
   def __init__(self, data):
     # Example move request body:
     # https://docs.battlesnake.com/references/api#request
-    self.board = Board(data["board"])
+    me = data["you"]
 
-    self.my_head = data["you"]["head"]
-    self.my_tail = data["you"]["body"][-1]
-    self.my_health = data["you"]["health"]
+    self.board = Board(data)
+
+    self.my_head = me["head"]
+    self.my_tail = me["body"][-1]
+    self.my_health = me["health"]
 
   # Reduce possible_moves to avoid death from walls, snakes, or hazards
   def avoid_death(self, possible_moves):
@@ -41,7 +43,7 @@ class Snake:
 
     for coord in coords_to_check:
       token = self.board.token(coord)
-      if token == Token.OUT_OF_BOUNDS or token == Token.HAZARD or token == Token.SNAKE:
+      if token == TokenType.OUT_OF_BOUNDS or token == TokenType.HAZARD or token == TokenType.SNAKE:
         new_moves.remove(coord["move"])
         
     # TODO: Avoid death by going head-to-head with a longer snake

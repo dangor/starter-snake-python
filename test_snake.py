@@ -14,6 +14,7 @@ class TestSnake(unittest.TestCase):
         "hazards": []
       },
       "you": {
+        "id": "me",
         "health": 100,
         "body": [{"x": 0, "y": 0}]
       }
@@ -54,6 +55,7 @@ class TestSnake(unittest.TestCase):
     merge_dict(test_data, {
       "board": {
         "snakes": [{
+          "id": "me",
           "head": {"x": 1, "y": 1},
           "body": [
             {"x": 1, "y": 1},
@@ -78,6 +80,7 @@ class TestSnake(unittest.TestCase):
     merge_dict(test_data, {
       "board": {
         "snakes": [{
+          "id": "them",
           "body": [{"x": 2, "y": 1}]
         }]
       },

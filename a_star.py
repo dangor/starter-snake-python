@@ -40,12 +40,8 @@ def heuristic(coord, goal):
   return abs(x1 - x2) + abs(y1 - y2)
 
 # Returns the weight or cost of traversing to the given coordinate.
-# Zero cost means free, while higher cost discourages traversal.
-def weight(coord):
-  # TODO: Add weight logic. Some ideas:
-  # - Avoid spaces next to long snakes, return high weight
-  # - Avoid food if snake is healthy, return low-medium weight
-  return 0
+def weight(board, coord):
+  return board.get_weight(coord)
 
 # Actual A* search (Board object, start coord, goal coord)
 def a_star(board, start_coord, goal_coord):
@@ -68,7 +64,7 @@ def a_star(board, start_coord, goal_coord):
     current_coord = {"x": x, "y": y}
     for neighbor_coord in board.safe_neighbors(current_coord):
       neighbor = (neighbor_coord["x"], neighbor_coord["y"])
-      tentative_gScore = gScore[current] + weight(neighbor)
+      tentative_gScore = gScore[current] + weight(board, neighbor_coord)
       if neighbor not in gScore:
         gScore[neighbor] = sys.maxsize
       if tentative_gScore < gScore[neighbor]:

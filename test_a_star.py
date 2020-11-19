@@ -7,11 +7,18 @@ from a_star import a_star
 class TestAStar(unittest.TestCase):
   def setUp(self):
     self.default_data = {
-      "width": 3,
-      "height": 3,
-      "snakes": [],
-      "food": [],
-      "hazards": []
+      "board": {
+        "width": 3,
+        "height": 3,
+        "snakes": [],
+        "food": [],
+        "hazards": []
+      },
+      "you": {
+        "id": "me",
+        "health": 100,
+        "body": [{"x": 0, "y": 0}]
+      }
     }
 
   def test_safe_neighbor(self):
@@ -32,6 +39,7 @@ class TestAStar(unittest.TestCase):
     test_data = self.default_data
     merge_dict(test_data, {
       "snakes": [{
+        "id": "them",
         "body": [
           {"x": 1, "y": 0},
           {"x": 1, "y": 1}

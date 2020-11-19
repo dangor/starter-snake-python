@@ -5,11 +5,18 @@ from board import Board
 class TestBoard(unittest.TestCase):
   def setUp(self):
     self.default_data = {
-      "width": 3,
-      "height": 3,
-      "snakes": [],
-      "food": [],
-      "hazards": []
+      "board": {
+        "width": 3,
+        "height": 3,
+        "snakes": [],
+        "food": [],
+        "hazards": []
+      },
+      "you": {
+        "id": "me",
+        "health": 100,
+        "body": [{"x": 0, "y": 0}]
+      }
     }
 
   def test_nearest_food(self):

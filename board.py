@@ -4,7 +4,7 @@ import sys
 """
 Board token types
 """
-class Token(Enum):
+class TokenType(Enum):
   OUT_OF_BOUNDS = -1
   EMPTY = 0
   SNAKE = 1
@@ -12,43 +12,64 @@ class Token(Enum):
   HAZARD = 3
 
 """
+Weights to add for specific spaces, to discourage traversing to it
+"""
+class Weight(Enum):
+  UNNECESSARY_FOOD = 2
+  HAZARD = 4
+  LONG_SNAKE_HEAD = 10
+
+"""
 Board representation
 """
 class Board:
-  def __init__(self, board_data):
-    # Initialize board
-    board = []
-    for i in range(board_data["width"]):
-      column = []
-      for j in range(board_data["height"]):
-        column.append(Token.EMPTY)
-      board.append(column)
-    
-    # Add snakes
-    for snake in board_data["snakes"]:
-      for coord in snake["body"]:
-        board[coord["x"]][coord["y"]] = Token.SNAKE
+  def __init__(self, data):
+    board_data, my_data = data["board"], data["you"]
 
-    # Add food
-    for food in board_data["food"]:
-      board[food["x"]][food["y"]] = Token.FOOD
-
-    # Add hazards
-    for hazard in board_data["hazards"]:
-      board[hazard["x"]][hazard["y"]] = Token.HAZARD
-
-    self.board = board
     self.height = board_data["height"]
     self.width = board_data["width"]
+
+    # Initialize board and weights
+    self.board = [[TokenType.EMPTY] * self.height] * self.width
+    self.weight = [[0] * self.height] * self.width
+    
+    # Process snakes
+    for snake in board_data["snakes"]:
+      # Add snake to board
+      for coord in snake["body"]:
+        self.board[coord["x"]][coord["y"]] = TokenType.SNAKE
+      
+      # Add weights to avoid long snakes
+      if snake["id"] != my_data["id"] and len(my_data["body"]) >= len(snake["body"]):
+        self.add_neighbor_weight(snake["body"][0], Weight.LONG_SNAKE_HEAD.value)
+
+    # Process food
+    for food in board_data["food"]:
+      # Add food to board
+      self.board[food["x"]][food["y"]] = TokenType.FOOD
+
+      # If snake is healthy, let's try to discourage eating it
+      if my_data["health"] > 20:
+        self.weight[food["x"]][food["y"]] += Weight.UNNECESSARY_FOOD.value
+
+    # Process hazards
+    for hazard in board_data["hazards"]:
+      self.board[hazard["x"]][hazard["y"]] = TokenType.HAZARD
+      self.add_neighbor_weight(hazard, Weight.HAZARD.value)
+
     self.food = board_data["food"]
 
   # Get token type at coord
   def token(self, coord):
-    x, y = coord["x"], coord["y"]
-    if x < 0 or y < 0 or x >= self.width or y >= self.height:
-      return Token.OUT_OF_BOUNDS
+    if self.is_out_of_bounds(coord):
+      return TokenType.OUT_OF_BOUNDS
 
-    return self.board[x][y]
+    return self.board[coord["x"]][coord["y"]]
+
+  # Return true if out of bounds
+  def is_out_of_bounds(self, coord):
+    x, y = coord["x"], coord["y"]
+    return x < 0 or y < 0 or x >= self.width or y >= self.height
 
   # Find nearest food to coord
   def nearest_food(self, coord):
@@ -73,17 +94,34 @@ class Board:
 
   # Return a list of safe neighbors to go to from coord
   def safe_neighbors(self, coord):
+    safe = []
+
+    for neighbor in self.neighbors(coord):
+      neighbor_token = self.token(neighbor)
+      if neighbor_token == TokenType.EMPTY or neighbor_token == TokenType.FOOD:
+        safe.append(neighbor)
+
+    return safe
+  
+  # Get list of neighbor coords, exclude out of bounds
+  def neighbors(self, coord):
     neighbors = [
       {"x": coord["x"], "y": coord["y"] + 1},
       {"x": coord["x"], "y": coord["y"] - 1},
       {"x": coord["x"] + 1, "y": coord["y"]},
       {"x": coord["x"] - 1, "y": coord["y"]},
     ]
-    safe = []
-
+    in_bounds = []
     for neighbor in neighbors:
-      neighbor_token = self.token(neighbor)
-      if neighbor_token == Token.EMPTY or neighbor_token == Token.FOOD:
-        safe.append(neighbor)
+      if not self.is_out_of_bounds(neighbor):
+        in_bounds.append(neighbor)
+    return in_bounds
 
-    return safe
+  # Add weight to neighbor coords
+  def add_neighbor_weight(self, coord, weight):
+    for neighbor in self.neighbors(coord):
+      self.weight[neighbor["x"]][neighbor["y"]] = weight
+
+  # Return weight of coord. Higher value discourages snake traversal.
+  def get_weight(self, coord):
+    return self.weight[coord["x"]][coord["y"]]
