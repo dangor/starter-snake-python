@@ -41,7 +41,7 @@ class Board:
         self.board[coord] = TokenType.SNAKE
       
       # Add weights to avoid long snakes
-      if snake["id"] != my_data["id"] and len(my_data["body"]) >= len(snake["body"]):
+      if snake["id"] != my_data["id"] and len(my_data["body"]) <= len(snake["body"]):
         self.add_neighbor_weight(snake["body"][0], Weight.LONG_SNAKE_HEAD.value)
 
     # Process food
