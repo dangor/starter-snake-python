@@ -17,8 +17,8 @@ Weights to add for specific spaces, to discourage traversing to it
 class Weight(Enum):
   DEFAULT = 0
   UNNECESSARY_FOOD = 2
-  HAZARD = 4
-  LONG_SNAKE_HEAD = 10
+  HAZARD = 3
+  LONG_SNAKE_HEAD = 15
 
 """
 Board representation

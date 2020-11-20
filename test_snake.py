@@ -124,5 +124,46 @@ class TestSnake(unittest.TestCase):
 
     self.assertEqual(snake.next_move(), "right")
 
+  # Unit test built off of loss:
+  # https://play.battlesnake.com/g/858d116f-adb5-4c3c-acdf-63dfbed216c5/
+  def test_head_to_head_worse_than_hazards(self):
+    test_data = self.default_data
+    my_snake = {
+      "id": "me",
+      "head": (4, 2),
+      "body": [(4, 2), (3, 2), (3, 1), (2, 1), (2, 2)],
+      "health": 100
+    }
+    merge_dict(test_data, {
+      "board": {
+        "width": 7,
+        "height": 7,
+        "hazards": [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6)],
+        "snakes": [
+          my_snake,
+          {
+            "id": "them",
+            "head": (4, 4),
+            "body": [(4, 4), (3, 4), (3, 5), (4, 5), (4, 6), (3, 6)],
+            "health": 100
+          }
+        ]
+      },
+      "you": my_snake
+    })
+    snake = Snake(test_data)
+
+    """
+    |■| | |■|■| | |
+    |■| | |■|■| | |
+    |■| | |■|>| | |
+    |■| | | | | | |
+    |■| |ø|ø|>| | |
+    |■| |ø|ø| | | |
+    |■| | | | | | |
+    """
+
+    self.assertEqual(snake.next_move(), "down")
+
 if __name__ == '__main__':
   unittest.main()
