@@ -7,17 +7,24 @@ from a_star import a_star
 class TestAStar(unittest.TestCase):
   def setUp(self):
     self.default_data = {
-      "width": 3,
-      "height": 3,
-      "snakes": [],
-      "food": [],
-      "hazards": []
+      "board": {
+        "width": 3,
+        "height": 3,
+        "snakes": [],
+        "food": [],
+        "hazards": []
+      },
+      "you": {
+        "id": "me",
+        "health": 100,
+        "body": [(0, 0)]
+      }
     }
 
   def test_safe_neighbor(self):
     board = Board(self.default_data)
-    start = {"x": 0, "y": 0}
-    goal = {"x": 1, "y": 0}
+    start = (0, 0)
+    goal = (1, 0)
 
     """
     | | | |
@@ -31,16 +38,16 @@ class TestAStar(unittest.TestCase):
   def test_navigate_around_obstacle(self):
     test_data = self.default_data
     merge_dict(test_data, {
-      "snakes": [{
-        "body": [
-          {"x": 1, "y": 0},
-          {"x": 1, "y": 1}
-        ]
-      }]
+      "board": {
+        "snakes": [{
+          "id": "them",
+          "body": [(1, 0), (1, 1)]
+        }]
+      }
     })
     board = Board(test_data)
-    start = {"x": 0, "y": 0}
-    goal = {"x": 2, "y": 0}
+    start = (0, 0)
+    goal = (2, 0)
 
     """
     | | | |
@@ -51,11 +58,11 @@ class TestAStar(unittest.TestCase):
     path = a_star(board, start, goal)
     self.assertEqual(path, [
       start,
-      {"x": 0, "y": 1},
-      {"x": 0, "y": 2},
-      {"x": 1, "y": 2},
-      {"x": 2, "y": 2},
-      {"x": 2, "y": 1},
+      (0, 1),
+      (0, 2),
+      (1, 2),
+      (2, 2),
+      (2, 1),
       goal
     ])
 
