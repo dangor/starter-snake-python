@@ -23,12 +23,10 @@ class PriorityQueue:
 # Util for returning the full path to the goal at the end of the search
 # Note: Takes in list of tuples and returns list of dicts.
 def reconstruct_path(came_from, current):
-  (x, y) = current
-  total_path = [{"x": x, "y": y}]
+  total_path = [current]
   while current in came_from:
     current = came_from[current]
-    (x, y) = current
-    total_path.insert(0, {"x": x, "y": y})
+    total_path.insert(0, current)
   return total_path
 
 # Heuristic or value of the coord relative to the goal. Typically distance.
@@ -44,10 +42,7 @@ def weight(board, coord):
   return board.get_weight(coord)
 
 # Actual A* search (Board object, start coord, goal coord)
-def a_star(board, start_coord, goal_coord):
-  # TODO: Maybe the entire app should work with tuples.
-  start = (start_coord["x"], start_coord["y"])
-  goal = (goal_coord["x"], goal_coord["y"])
+def a_star(board, start, goal):
 
   open_set = PriorityQueue()
   open_set.put(start, heuristic(start, goal))
@@ -60,11 +55,8 @@ def a_star(board, start_coord, goal_coord):
     if current == goal:
       return reconstruct_path(came_from, current)
 
-    (x, y) = current
-    current_coord = {"x": x, "y": y}
-    for neighbor_coord in board.safe_neighbors(current_coord):
-      neighbor = (neighbor_coord["x"], neighbor_coord["y"])
-      tentative_gScore = gScore[current] + weight(board, neighbor_coord)
+    for neighbor in board.safe_neighbors(current):
+      tentative_gScore = gScore[current] + weight(board, neighbor)
       if neighbor not in gScore:
         gScore[neighbor] = sys.maxsize
       if tentative_gScore < gScore[neighbor]:

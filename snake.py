@@ -20,6 +20,7 @@ class Snake:
   def __init__(self, data):
     # Example move request body:
     # https://docs.battlesnake.com/references/api#request
+    # Note that all coordinate dicts are now tuples of ints (x, y)
     me = data["you"]
 
     self.board = Board(data)
@@ -29,35 +30,33 @@ class Snake:
     self.my_health = me["health"]
 
   # Reduce possible_moves to avoid death from walls, snakes, or hazards
-  def avoid_death(self, possible_moves):
-    x, y = self.my_head["x"], self.my_head["y"]
+  def avoid_death(self):
+    (x, y) = self.my_head
 
-    new_moves = possible_moves
+    new_moves = [Move.UP, Move.DOWN, Move.LEFT, Move.RIGHT]
 
-    above = {"x": x, "y": y + 1, "move": Move.UP}
-    below = {"x": x, "y": y - 1, "move": Move.DOWN}
-    left = {"x": x - 1, "y": y, "move": Move.LEFT}
-    right = {"x": x + 1, "y": y, "move": Move.RIGHT}
+    above = {"coord": (x, y + 1), "move": Move.UP}
+    below = {"coord": (x, y - 1), "move": Move.DOWN}
+    left = {"coord": (x - 1, y), "move": Move.LEFT}
+    right = {"coord": (x + 1, y), "move": Move.RIGHT}
 
     coords_to_check = [above, below, left, right]
 
     for coord in coords_to_check:
-      token = self.board.token(coord)
+      token = self.board.token(coord["coord"])
       if token == TokenType.OUT_OF_BOUNDS or token == TokenType.HAZARD or token == TokenType.SNAKE:
         new_moves.remove(coord["move"])
         
-    # TODO: Avoid death by going head-to-head with a longer snake
-
     return new_moves
 
   # Get the move direction
   # This assumes the arguments are neighbors.
   def direction(self, start, end):
-    if end["y"] > start["y"]:
+    if end[1] > start[1]:
       return Move.UP
-    elif end["y"] < start["y"]:
+    elif end[1] < start[1]:
       return Move.DOWN
-    elif end["x"] > start ["x"]:
+    elif end[0] > start [0]:
       return Move.RIGHT
     else:
       return Move.LEFT
@@ -70,15 +69,6 @@ class Snake:
   # Get next move, private
   # Returns a Move enum
   def _next_move(self):
-    possible_moves = [Move.UP, Move.DOWN, Move.LEFT, Move.RIGHT]
-
-    possible_moves = self.avoid_death(possible_moves)
-
-    if len(possible_moves) == 0:
-      print("Trapped! Defaulting to move up.")
-      # TODO: Chase snake tail, especially if we know it will move.
-      return Move.UP
-
     # 1. If healthy, pick direction based on best path to own tail
     if self.my_health > 20:
       direction = self.direction_to_tail()
@@ -102,8 +92,13 @@ class Snake:
     # TODO: Add more logic as we learn it
 
     # Default choose random. Points to area for improvement.
-    print(f"Failed to path. Defaulting to random.")
-    return random.choice(possible_moves)
+    print("Failed to path. Defaulting to random.")
+    possible_moves = self.avoid_death()
+    if len(possible_moves) > 0:
+      return random.choice(possible_moves)
+    else:
+      print("Trapped! Defaulting to up.")
+      return Move.UP
 
   # Get direction to tail
   def direction_to_tail(self):

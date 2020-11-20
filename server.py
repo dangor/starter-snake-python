@@ -3,6 +3,7 @@ import os
 import cherrypy
 
 from snake import Snake
+from util import tuplify
 
 """
 This is a simple Battlesnake server written in Python.
@@ -41,7 +42,7 @@ class Battlesnake(object):
         # Valid moves are "up", "down", "left", or "right".
         data = cherrypy.request.json
 
-        snake = Snake(data)
+        snake = Snake(tuplify(data))
         move = snake.next_move()
 
         print(f"MOVE: {move}")

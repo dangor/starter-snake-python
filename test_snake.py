@@ -7,8 +7,8 @@ class TestSnake(unittest.TestCase):
   def setUp(self):
     self.default_data = {
       "board": {
-        "width": 3,
-        "height": 3,
+        "width": 4,
+        "height": 4,
         "snakes": [],
         "food": [],
         "hazards": []
@@ -16,10 +16,9 @@ class TestSnake(unittest.TestCase):
       "you": {
         "id": "me",
         "health": 100,
-        "body": [{"x": 0, "y": 0}]
+        "body": [(0, 0)]
       }
     }
-    self.default_moves = [Move.UP, Move.DOWN, Move.LEFT, Move.RIGHT]
 
   def test_avoid_wall(self):
     test_data = self.default_data
@@ -29,25 +28,26 @@ class TestSnake(unittest.TestCase):
         "height": 10
       },
       "you": {
-        "head": {"x": 0, "y": 9}
+        "head": (0, 9)
       }
     })
     snake = Snake(test_data)
-    new_moves = snake.avoid_death(self.default_moves)
+    new_moves = snake.avoid_death()
     self.assertEqual(new_moves, [Move.DOWN, Move.RIGHT])
 
   def test_avoid_hazard(self):
     test_data = self.default_data
     merge_dict(test_data, {
       "board": {
-        "hazards": [{"x": 0, "y": 1}]
+        "hazards": [(0, 1)]
       },
       "you": {
-        "head": {"x": 1, "y": 1}
+        "head": (1, 1)
       }
     })
+    print(test_data)
     snake = Snake(test_data)
-    new_moves = snake.avoid_death(self.default_moves)
+    new_moves = snake.avoid_death()
     self.assertEqual(new_moves, [Move.UP, Move.DOWN, Move.RIGHT])
 
   def test_avoid_own_body(self):
@@ -56,23 +56,17 @@ class TestSnake(unittest.TestCase):
       "board": {
         "snakes": [{
           "id": "me",
-          "head": {"x": 1, "y": 1},
-          "body": [
-            {"x": 1, "y": 1},
-            {"x": 1, "y": 0}
-          ]
+          "head": (1, 1),
+          "body": [(1, 1), (1, 0)]
         }]
       },
       "you": {
-        "head": {"x": 1, "y": 1},
-        "body": [
-          {"x": 1, "y": 1},
-          {"x": 1, "y": 0}
-        ]
+        "head": (1, 1),
+        "body": [(1, 1), (1, 0)]
       }
     })
     snake = Snake(test_data)
-    new_moves = snake.avoid_death(self.default_moves)
+    new_moves = snake.avoid_death()
     self.assertEqual(new_moves, [Move.UP, Move.LEFT, Move.RIGHT])
 
   def test_avoid_other_snake(self):
@@ -81,15 +75,15 @@ class TestSnake(unittest.TestCase):
       "board": {
         "snakes": [{
           "id": "them",
-          "body": [{"x": 2, "y": 1}]
+          "body": [(2, 1)]
         }]
       },
       "you": {
-        "head": {"x": 1, "y": 1}
+        "head": (1, 1)
       }
     })
     snake = Snake(test_data)
-    new_moves = snake.avoid_death(self.default_moves)
+    new_moves = snake.avoid_death()
     self.assertEqual(new_moves, [Move.UP, Move.DOWN, Move.LEFT])
 
 if __name__ == '__main__':
