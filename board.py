@@ -16,6 +16,8 @@ Weights to add for specific spaces, to discourage traversing to it
 """
 class Weight(Enum):
   DEFAULT = 0
+  BORDER = 1
+  OTHER_SNAKE_BODY = 1
   UNNECESSARY_FOOD = 2
   HAZARD = 3
   LONG_SNAKE_HEAD = 15
@@ -35,16 +37,28 @@ class Board:
     self.board = {} # sparse matrix of tokens
     self.weight = {} # sparse matrix of weights to discourage traversal
     self.safe_tails = set() # hash set of safe tails
+
+    # Process borders
+    for i in range(self.width):
+      self.add_weight((i, 0), Weight.BORDER)
+      self.add_weight((i, self.height - 1), Weight.BORDER)
+    for j in range(self.height):
+      # Double-weighting the corners, that's okay until we learn more
+      self.add_weight((0, j), Weight.BORDER)
+      self.add_weight((self.width - 1, j), Weight.BORDER)
     
     # Process snakes
     for snake in board_data["snakes"]:
       # Add snake to board
       for coord in snake["body"]:
         self.board[coord] = TokenType.SNAKE
+
+        if snake["id"] != my_data["id"]:
+          self.add_neighbor_weight(coord, Weight.OTHER_SNAKE_BODY)
       
       # Add weights to avoid long snakes
       if snake["id"] != my_data["id"] and len(my_data["body"]) <= len(snake["body"]):
-        self.add_neighbor_weight(snake["body"][0], Weight.LONG_SNAKE_HEAD.value)
+        self.add_neighbor_weight(snake["body"][0], Weight.LONG_SNAKE_HEAD)
 
       # Add tail if it's safe
       if snake["health"] < 100 and data["turn"] > 2:
@@ -58,12 +72,12 @@ class Board:
 
       # If snake is healthy, let's try to discourage eating it
       if my_data["health"] > 20:
-        self.add_weight(food, Weight.UNNECESSARY_FOOD.value)
+        self.add_weight(food, Weight.UNNECESSARY_FOOD)
 
     # Process hazards
     for hazard in board_data["hazards"]:
       self.board[hazard] = TokenType.HAZARD
-      self.add_neighbor_weight(hazard, Weight.HAZARD.value)
+      self.add_neighbor_weight(hazard, Weight.HAZARD)
 
   # Get token type at coord
   def token(self, coord):
@@ -129,13 +143,13 @@ class Board:
   # Add weight to neighbor coords
   def add_neighbor_weight(self, coord, weight):
     for neighbor in self.neighbors(coord):
-      self.weight[neighbor] = weight
+      self.add_weight(neighbor, weight)
 
   # Add weight to coord
   def add_weight(self, coord, weight):
     if coord not in self.weight:
-      self.weight[coord] = 0
-    self.weight[coord] += weight
+      self.weight[coord] = Weight.DEFAULT.value
+    self.weight[coord] += weight.value
 
   # Return weight of coord. Higher value discourages snake traversal.
   def get_weight(self, coord):

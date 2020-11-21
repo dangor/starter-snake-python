@@ -80,16 +80,17 @@ class Snake:
 
   # Get direction to tail
   def direction_to_tail(self):
+    direction = self.direction_to_coord(self.my_tail)
+    if direction != None:
+      return direction
+
     tail_neighbors = self.board.safe_neighbors(self.my_tail)
     if len(tail_neighbors) > 0:
       # Loop through all neighbors in case the first neighbor is unpathable
       for tail_neighbor in tail_neighbors:
-        # TODO: Predict future and see if we will trap ourselves if we go to this square, e.g. if we just ate food
         direction = self.direction_to_coord(tail_neighbor)
         if direction != None:
           return direction
-    
-    # TODO: Chase snake tail instead of neighbor, especially if we know it will move.
 
     return None
 
