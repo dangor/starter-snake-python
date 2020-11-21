@@ -44,6 +44,7 @@ def to_tuples(coords):
 def to_tuple(coord):
   return (coord["x"], coord["y"])
 
+# Default data for testing
 def default_data():
   return {
     "turn": 3,
@@ -60,3 +61,9 @@ def default_data():
       "body": [(0, 0)]
     }
   }
+
+# Return Manhattan distance between coords
+def manhattan(coord1, coord2):
+  (x1, y1) = coord1
+  (x2, y2) = coord2
+  return abs(x1 - x2) + abs(y1 - y2)

@@ -1,5 +1,6 @@
 from enum import Enum
 import sys
+from util import manhattan
 
 """
 Board token types
@@ -101,13 +102,13 @@ class Board:
     shortest = sys.maxsize
 
     for food in self.food:
-      distance = self.calculate_distance(food[0], food[1], coord[0], coord[1])
+      distance = manhattan(food, coord)
       
       if distance < shortest:
         shortest = distance
-        coords = food
+        nearest = food
 
-    return coords
+    return nearest
   
   # Calculate distance
   def calculate_distance(self, x1, y1, x2, y2):

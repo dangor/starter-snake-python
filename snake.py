@@ -1,6 +1,7 @@
-from board import Board, Weight
+from board import Board, Weight, TokenType
 from enum import Enum
 from a_star import a_star
+from util import manhattan
 
 """
 Move types
@@ -24,6 +25,7 @@ class Snake:
     self.board = Board(data)
 
     self.my_head = me["head"]
+    self.my_body = me["body"]
     self.my_tail = me["body"][-1]
     self.my_health = me["health"]
 
@@ -104,4 +106,22 @@ class Snake:
 
   # Return true if risk of moving to coord is low
   def is_low_risk(self, coord):
-    return self.board.get_weight(coord) < Weight.LONG_SNAKE_HEAD.value
+    if self.board.get_weight(coord) >= Weight.LONG_SNAKE_HEAD.value:
+      # long snake, high risk
+      return False
+    
+    if len(self.board.safe_neighbors(coord)) > 0:
+      # has exit strategy, low risk
+      return True
+
+    future_tail = self.my_body[-2]
+    if self.my_health == 100:
+      # tail is not going to move
+      future_tail = self.my_tail
+
+    if self.board.token(coord) != TokenType.FOOD and manhattan(coord, future_tail) <= 1:
+      # tail will be safe exit, low risk
+      return True
+
+    # Coord has food and there is no exit strategy, high risk
+    return False

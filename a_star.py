@@ -1,5 +1,6 @@
 import heapq
 import sys
+from util import manhattan
 
 """
 A* search algorithm, converted from pseudocode in wikipedia article
@@ -21,7 +22,6 @@ class PriorityQueue:
     return heapq.heappop(self.items)[1]
 
 # Util for returning the full path to the goal at the end of the search
-# Note: Takes in list of tuples and returns list of dicts.
 def reconstruct_path(came_from, current):
   total_path = [current]
   while current in came_from:
@@ -30,12 +30,8 @@ def reconstruct_path(came_from, current):
   return total_path
 
 # Heuristic or value of the coord relative to the goal. Typically distance.
-# Note: Takes in tuples and not dicts.
 def heuristic(coord, goal):
-  # return manhattan distance
-  (x1, y1) = coord
-  (x2, y2) = goal
-  return abs(x1 - x2) + abs(y1 - y2)
+  return manhattan(coord, goal)
 
 # Returns the weight or cost of traversing to the given coordinate.
 def weight(board, coord):
