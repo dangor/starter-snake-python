@@ -29,10 +29,12 @@ class Board:
 
     self.height = board_data["height"]
     self.width = board_data["width"]
+    self.food = board_data["food"]
 
-    # Initialize board and weights
-    self.board = {}
-    self.weight = {}
+    # Initialize views
+    self.board = {} # sparse matrix of tokens
+    self.weight = {} # sparse matrix of weights to discourage traversal
+    self.safe_tails = set() # hash set of safe tails
     
     # Process snakes
     for snake in board_data["snakes"]:
@@ -43,6 +45,11 @@ class Board:
       # Add weights to avoid long snakes
       if snake["id"] != my_data["id"] and len(my_data["body"]) <= len(snake["body"]):
         self.add_neighbor_weight(snake["body"][0], Weight.LONG_SNAKE_HEAD.value)
+
+      # Add tail if it's safe
+      if snake["health"] < 100 and data["turn"] > 2:
+        # Assume tail will move
+        self.safe_tails.add(snake["body"][-1])
 
     # Process food
     for food in board_data["food"]:
@@ -57,8 +64,6 @@ class Board:
     for hazard in board_data["hazards"]:
       self.board[hazard] = TokenType.HAZARD
       self.add_neighbor_weight(hazard, Weight.HAZARD.value)
-
-    self.food = board_data["food"]
 
   # Get token type at coord
   def token(self, coord):
@@ -101,7 +106,7 @@ class Board:
 
     for neighbor in self.neighbors(coord):
       neighbor_token = self.token(neighbor)
-      if neighbor_token == TokenType.EMPTY or neighbor_token == TokenType.FOOD:
+      if neighbor_token == TokenType.EMPTY or neighbor_token == TokenType.FOOD or neighbor in self.safe_tails:
         safe.append(neighbor)
 
     return safe

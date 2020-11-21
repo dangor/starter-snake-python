@@ -43,3 +43,20 @@ def to_tuples(coords):
 # Convert one coord to one tuple
 def to_tuple(coord):
   return (coord["x"], coord["y"])
+
+def default_data():
+  return {
+    "turn": 3,
+    "board": {
+      "width": 3,
+      "height": 3,
+      "snakes": [],
+      "food": [],
+      "hazards": []
+    },
+    "you": {
+      "id": "me",
+      "health": 100,
+      "body": [(0, 0)]
+    }
+  }

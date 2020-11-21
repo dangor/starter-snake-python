@@ -1,6 +1,4 @@
-import random
-
-from board import Board, TokenType, Weight
+from board import Board, Weight
 from enum import Enum
 from a_star import a_star
 
