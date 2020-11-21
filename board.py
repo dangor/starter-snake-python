@@ -18,8 +18,8 @@ Weights to add for specific spaces, to discourage traversing to it
 class Weight(Enum):
   DEFAULT = 0
   BORDER = 1
-  OTHER_SNAKE_BODY = 1
   UNNECESSARY_FOOD = 2
+  OTHER_SNAKE_BODY = 3
   HAZARD = 3
   LONG_SNAKE_HEAD = 15
 
